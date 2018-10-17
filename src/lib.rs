@@ -56,6 +56,8 @@
 //! ```
 
 
+#[macro_use]
+extern crate log;
 extern crate libc;
 
 pub use hwaddr::*;
@@ -324,11 +326,11 @@ impl Queue {
         let buf_len = buf.len() as libc::size_t;
 
         loop {
-            let rc = unsafe { libc::recv(fd,buf_ptr,buf_len,0) };
+            let rc = unsafe { libc::recv(fd, buf_ptr, buf_len,0) };
             if rc < 0 { panic!("error in recv()"); };
 
             let rv = unsafe { nflog_handle_packet(self.qh, buf_ptr, rc as libc::c_int) };
-            if rv < 0 { println!("error in nflog_handle_packet()"); }; // not critical
+            if rv < 0 { warn!("error in nflog_handle_packet(): {}", rv); }; // not critical
         }
     }
 }
